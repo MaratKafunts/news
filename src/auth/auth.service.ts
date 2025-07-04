@@ -1,9 +1,14 @@
+/* eslint-disable @typescript-eslint/no-unsafe-return */
 /* eslint-disable @typescript-eslint/require-await */
 /* eslint-disable @typescript-eslint/no-misused-promises */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import * as bcrypt from 'bcrypt';
 import { User } from './schema/auth.schema';
@@ -77,9 +82,16 @@ export class AuthService {
       });
 
       return { accessToken: newAccessToken };
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    } catch (err) {
+    } catch {
       throw new UnauthorizedException('Refresh token is invalid or expired');
+    }
+  }
+
+  decode(accessToken: string) {
+    try {
+      return this.jwtService.decode(accessToken);
+    } catch {
+      throw new BadRequestException('Invalid token');
     }
   }
 }

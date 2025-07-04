@@ -45,4 +45,20 @@ export class UserService {
 
     return { message: 'User deleted successfully' };
   }
+
+  async getAllUsers() {
+    return await this.userModel.find().exec();
+  }
+
+  async getOneUser(id: string) {
+    const user = await this.userModel.findById(id);
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    return {
+      message: 'User was found',
+      user,
+    };
+  }
 }
