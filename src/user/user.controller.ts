@@ -1,4 +1,12 @@
-import { Body, Controller, Delete, Patch, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  UseGuards,
+} from '@nestjs/common';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserService } from './user.service';
 import { AuthGuard } from '@nestjs/passport';
@@ -10,13 +18,28 @@ export class UserController {
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth()
   @Patch('update/:id')
-  update(id: string, @Body() dto: UpdateUserDto) {
+  update(@Param('id') id: string, @Body() dto: UpdateUserDto) {
     return this.userService.update(id, dto);
   }
+
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth()
   @Delete('delete/:id')
-  delete(id: string) {
+  delete(@Param('id') id: string) {
     return this.userService.delete(id);
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth()
+  @Get('getAll')
+  getAllUsers() {
+    return this.userService.getAllUsers();
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth()
+  @Get('getOne/:id')
+  getOneUser(@Param('id') id: string) {
+    return this.userService.getOneUser(id);
   }
 }

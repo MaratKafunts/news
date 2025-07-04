@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Delete,
+  Get,
   Param,
   Patch,
   Post,
@@ -34,5 +35,19 @@ export class NewsController {
   @Delete('delete/:id')
   delete(@Param('id') id: string) {
     return this.newsService.delete(id);
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth()
+  @Get('getAll')
+  getAllNews() {
+    return this.newsService.getAllNews();
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth()
+  @Get('getOne/:id')
+  getOneNews(@Param('id') id: string) {
+    return this.newsService.getOneNews(id);
   }
 }

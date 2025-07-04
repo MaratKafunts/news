@@ -40,4 +40,20 @@ export class NewsService {
 
     return { message: 'News deleted successfully' };
   }
+
+  async getAllNews() {
+    return await this.newsModel.find().exec();
+  }
+
+  async getOneNews(id: string) {
+    const news = await this.newsModel.findById(id);
+    if (!news) {
+      throw new NotFoundException('News not found');
+    }
+
+    return {
+      message: 'News was found',
+      news,
+    };
+  }
 }
