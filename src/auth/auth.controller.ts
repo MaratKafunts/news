@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/require-await */
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 /* eslint-disable @typescript-eslint/no-unsafe-call */
@@ -8,6 +10,7 @@ import {
   Get,
   Param,
   Post,
+  Req,
   UnauthorizedException,
   UseGuards,
 } from '@nestjs/common';
@@ -46,5 +49,19 @@ export class AuthController {
   @Get('deocdeUser/:accessToken')
   async decode(@Param('accessToken') accessToken: string) {
     return this.authService.decode(accessToken);
+  }
+
+  @Get('google')
+  @UseGuards(AuthGuard('google'))
+  async googleAuth() {}
+
+  @Get('google/redirect')
+  @UseGuards(AuthGuard('google'))
+  async googleAuthRedirect(@Req() req) {
+    const user = req.user;
+    return {
+      message: 'Успешная авторизация через Google',
+      user,
+    };
   }
 }

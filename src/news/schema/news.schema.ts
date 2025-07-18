@@ -8,6 +8,12 @@ export class News extends Document {
 
   @Prop()
   content: string;
+
+  @Prop()
+  driveFileId: string;
+
+  @Prop()
+  imageUrl: string;
 }
 
 export const NewsSchema = SchemaFactory.createForClass(News);

@@ -1,19 +1,101 @@
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateNewsDto } from './dto/news-create.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { News } from './schema/news.schema';
 import { Model } from 'mongoose';
 import { UpdateNewsDto } from './dto/news-update.dto';
-
+import { google } from 'googleapis';
+// import { serviceAccount } from 'src/credentials/credentials';
+import { Readable } from 'stream';
 @Injectable()
 export class NewsService {
-  constructor(@InjectModel(News.name) private newsModel: Model<News>) {}
+  // private driveClient: any;
 
-  async create(dto: CreateNewsDto) {
+  constructor(@InjectModel(News.name) private newsModel: Model<News>) {
+    // const auth: Auth.GoogleAuth = new google.auth.GoogleAuth({
+    //   credentials: serviceAccount,
+    //   scopes: ['https://www.googleapis.com/auth/drive'],
+    // });
+    // this.driveClient = google.drive({
+    //   version: 'v3',
+    //   auth: auth,
+    // });
+  }
+
+  // async create(
+  //   dto: CreateNewsDto,
+  //   image: Express.Multer.File,
+  //   accessToken: string,
+  // ) {
+  //   const oauth2Client = new google.auth.OAuth2();
+  //   oauth2Client.setCredentials({ access_token: accessToken });
+
+  //   const drive = google.drive({ version: 'v3', auth: oauth2Client });
+
+  //   const fileMetadata = {
+  //     name: image.originalname,
+  //     mimeType: image.mimetype,
+  //     parents: ['1--V8iStQ3XTqH8qinAlTooyf72zjV29G'],
+  //   };
+
+  //   const media = {
+  //     mimeType: image.mimetype,
+  //     body: bufferToStream(image.buffer),
+  //   };
+
+  //   const resp = await this.driveClient.files.create({
+  //     requestBody: fileMetadata,
+  //     media,
+  //     fields: 'id, webViewLink',
+  //     supportsAllDrives: true,
+  //   });
+
+  //   const createdNews = new this.newsModel({
+  //     title: dto.title,
+  //     content: dto.content,
+  //     driveFileId: resp.data.id,
+  //     imageUrl: resp.data.webViewLink,
+  //   });
+
+  //   return createdNews.save();
+  // }
+  async create(
+    dto: CreateNewsDto,
+    image: Express.Multer.File,
+    accessToken: string,
+  ) {
+    const oauth2Client = new google.auth.OAuth2();
+    oauth2Client.setCredentials({ access_token: accessToken });
+
+    const drive = google.drive({ version: 'v3', auth: oauth2Client });
+
+    const fileMetadata = {
+      name: image.originalname,
+      mimeType: image.mimetype,
+      parents: ['1--V8iStQ3XTqH8qinAlTooyf72zjV29G'],
+    };
+
+    const media = {
+      mimeType: image.mimetype,
+      body: bufferToStream(image.buffer),
+    };
+
+    const resp = await drive.files.create({
+      requestBody: fileMetadata,
+      media,
+      fields: 'id, webViewLink',
+    });
+
     const createdNews = new this.newsModel({
       title: dto.title,
       content: dto.content,
+      driveFileId: resp.data.id,
+      imageUrl: resp.data.webViewLink,
     });
+
     return createdNews.save();
   }
 
@@ -56,4 +138,11 @@ export class NewsService {
       news,
     };
   }
+}
+
+function bufferToStream(buffer: Buffer): Readable {
+  const readable = new Readable();
+  readable.push(buffer);
+  readable.push(null);
+  return readable;
 }

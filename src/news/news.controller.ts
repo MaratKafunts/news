@@ -3,16 +3,20 @@ import {
   Controller,
   Delete,
   Get,
+  Headers,
   Param,
   Patch,
   Post,
+  UploadedFile,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { CreateNewsDto } from './dto/news-create.dto';
 import { NewsService } from './news.service';
 import { AuthGuard } from '@nestjs/passport';
-import { ApiBearerAuth } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiConsumes } from '@nestjs/swagger';
 import { UpdateNewsDto } from './dto/news-update.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('news')
 export class NewsController {
@@ -20,9 +24,26 @@ export class NewsController {
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth()
   @Post('create')
-  create(@Body() dto: CreateNewsDto) {
-    return this.newsService.create(dto);
+  @UseInterceptors(FileInterceptor('image'))
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        title: { type: 'string', example: 'Some title' },
+        content: { type: 'string', example: 'Some content' },
+        image: { type: 'string', format: 'binary' },
+      },
+    },
+  })
+  create(
+    @Body() dto: CreateNewsDto,
+    @UploadedFile() image: Express.Multer.File,
+    @Headers('google-access-token') accessToken: string,
+  ) {
+    return this.newsService.create(dto, image, accessToken);
   }
+
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth()
   @Patch('update/:id')
