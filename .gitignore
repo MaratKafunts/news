@@ -15,7 +15,6 @@ lerna-debug.log*
 # OS
 .DS_Store
 
-src/credentials/credentials.ts
 
 
 # Tests
