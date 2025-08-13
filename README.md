@@ -1,3 +1,37 @@
+# News API
+
+A backend service for managing and publishing news articles, built with **NestJS** and **TypeScript**. Designed with an admin panel workflow, it allows authenticated users to create, edit, and manage news content, storing structured data in MongoDB and media files on Google Drive.
+
+## Key Functionality
+
+### Secure authentication
+- **JWT-based login** for API access.
+- **Google OAuth 2.0** integration for quick sign-in.
+
+### Admin panel endpoints
+- Create, update, and delete news articles.
+- Upload associated images.
+
+### Hybrid storage
+- **Article metadata** (title, content, category, etc.) stored in **MongoDB**.
+- **Images** uploaded and stored on **Google Drive** via API integration.
+
+### Data validation & architecture
+- **DTO-based validation** to ensure clean, consistent data.
+- **Modular NestJS architecture** for scalability and maintainability.
+
+## Tech Stack
+- **NestJS** — modular backend framework.
+- **TypeScript** — static typing and maintainable code.
+- **MongoDB + Mongoose** — schema-based document storage.
+- **Google Drive API** — remote image storage & retrieval.
+- **JWT Authentication** — secure API access.
+- **Google OAuth 2.0** — external identity provider login.
+- **DTO + class-validator** — strict request validation.
+
+
+
+
 <p align="center">
   <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
 </p>
